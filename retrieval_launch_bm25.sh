@@ -1,4 +1,4 @@
-file_path=/home/machao123/data
+file_path=/root/autodl-tmp/data
 index_file=$file_path/bm25
 corpus_file=$file_path/wiki18_extracted/data00/jiajie_jin/flashrag_indexes/wiki_dpr_100w/wiki_dump.jsonl
 retriever_name=bm25

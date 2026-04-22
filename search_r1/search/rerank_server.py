@@ -41,11 +41,11 @@ class BaseCrossEncoder:
         pairs = []
         qids = []
         for qid, query in enumerate(queries):
-            for document in documents:
-                for doc_item in document:
-                    doc = self._passage_to_string(doc_item)
-                    pairs.append((query, doc))
-                    qids.append(qid)
+            # Each query should only pair with its own retrieved documents.
+            for doc_item in documents[qid]:
+                doc = self._passage_to_string(doc_item)
+                pairs.append((query, doc))
+                qids.append(qid)
 
         scores = self._predict(pairs)
         query_to_doc_scores = defaultdict(list)

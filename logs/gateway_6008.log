@@ -1,0 +1,7 @@
+INFO:     Started server process [3771]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:6008 (Press CTRL+C to quit)
+INFO:     127.0.0.1:36646 - "POST /retrieve HTTP/1.1" 502 Bad Gateway
+INFO:     127.0.0.1:48058 - "POST /retrieve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48062 - "POST /retrieve HTTP/1.1" 200 OK

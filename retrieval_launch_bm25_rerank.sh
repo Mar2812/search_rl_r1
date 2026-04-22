@@ -1,9 +1,16 @@
-file_path=/home/machao123/data
+file_path=/root/autodl-tmp/data
 index_file=$file_path/bm25
-corpus_file=$file_path/wiki18_extracted/data00/jiajie_jin/flashrag_indexes/wiki_dpr_100w/wiki_dump.jsonl
+corpus_file=$file_path/wiki-18.jsonl
 
 retriever_name=bm25
-reranker_path=/home/machao123/models/BAAI_bge-reranker-base
+reranker_path=/root/autodl-tmp/models/BAAI_bge-reranker-base
+server_port=${PORT:-6006}
+
+export HF_HOME=/root/autodl-tmp/hf
+export HF_DATASETS_CACHE=/root/autodl-tmp/hf/datasets
+export TRANSFORMERS_CACHE=/root/autodl-tmp/hf/transformers
+export TMPDIR=/root/autodl-tmp/tmp
+mkdir -p "$HF_HOME" "$HF_DATASETS_CACHE" "$TRANSFORMERS_CACHE" "$TMPDIR"
 
 python search_r1/search/retrieval_rerank_server.py --index_path $index_file \
                                                    --corpus_path $corpus_file \
@@ -12,5 +19,5 @@ python search_r1/search/retrieval_rerank_server.py --index_path $index_file \
                                                    --reranking_topk 3 \
                                                    --reranker_model $reranker_path \
                                                    --reranker_batch_size 32 \
-                                                   --port 8001
+                                                   --port $server_port
 

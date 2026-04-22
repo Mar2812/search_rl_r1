@@ -1,0 +1,21 @@
+WARNING: Using incubator modules: jdk.incubator.vector
+Apr 23, 2026 12:30:17 AM org.apache.lucene.store.MMapDirectory lookupProvider
+WARNING: You are running with Java 22 or later. To make full use of MMapDirectory, please update Apache Lucene.
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::invokeCleaner has been called by org.apache.lucene.store.MappedByteBufferIndexInputProvider (file:/root/miniconda3/envs/retriever/lib/python3.10/site-packages/pyserini/resources/jars/anserini-1.1.1-fatjar.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.lucene.store.MappedByteBufferIndexInputProvider
+WARNING: sun.misc.Unsafe::invokeCleaner will be removed in a future release
+Loading weights:   0%|          | 0/201 [00:00<?, ?it/s]Loading weights: 100%|██████████| 201/201 [00:00<00:00, 3294.77it/s]
+[1mXLMRobertaForSequenceClassification LOAD REPORT[0m from: /root/autodl-tmp/models/BAAI_bge-reranker-base
+Key                             | Status     |  | 
+--------------------------------+------------+--+-
+roberta.embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO:     Started server process [3488]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:7002 (Press CTRL+C to quit)
+INFO:     127.0.0.1:39920 - "POST /retrieve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39932 - "POST /retrieve HTTP/1.1" 200 OK
