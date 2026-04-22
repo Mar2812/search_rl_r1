@@ -10,3 +10,4 @@ __pycache__/
 *.pyzzz
 *.pywzzz
 verl.egg-info/
+venv*/
