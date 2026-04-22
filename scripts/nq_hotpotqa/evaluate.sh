@@ -1,7 +1,7 @@
 data_name=nq_hotpotqa_train
 
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-export DATA_DIR=data/${data_name} # first download the data from https://huggingface.co/datasets/PeterJinGo/nq_hotpotqa_train
+export DATA_DIR=/root/autodl-tmp/data/nq_hotpotqa_train
 
 export BASE_MODEL=""
 

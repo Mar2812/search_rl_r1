@@ -337,12 +337,23 @@ def retrieve_endpoint(request: QueryRequest):
     if not request.topk:
         request.topk = config.retrieval_topk  # fallback to default
 
-    # Perform batch retrieval
-    results, scores = retriever.batch_search(
-        query_list=request.queries,
-        num=request.topk,
-        return_score=request.return_scores
-    )
+    # Perform batch retrieval.
+    # `batch_search` returns:
+    # - (results, scores) when return_score=True
+    # - results only when return_score=False
+    if request.return_scores:
+        results, scores = retriever.batch_search(
+            query_list=request.queries,
+            num=request.topk,
+            return_score=True
+        )
+    else:
+        results = retriever.batch_search(
+            query_list=request.queries,
+            num=request.topk,
+            return_score=False
+        )
+        scores = None
     
     # Format response
     resp = []
