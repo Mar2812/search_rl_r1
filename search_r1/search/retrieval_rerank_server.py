@@ -94,7 +94,7 @@ if __name__ == "__main__":
     parser.add_argument("--reranking_topk", type=int, default=3, help="Number of reranked passages for one query.")
     parser.add_argument("--reranker_model", type=str, default="cross-encoder/ms-marco-MiniLM-L12-v2", help="Path of the reranker model.")
     parser.add_argument("--reranker_batch_size", type=int, default=32, help="Batch size for the reranker inference.")
-
+    parser.add_argument("--port", type=int, default=8001, help="Server port.")
     args = parser.parse_args()
     
     # ----------- Load Retriever and Reranker -----------
@@ -120,4 +120,4 @@ if __name__ == "__main__":
     reranker = get_reranker(reranker_config)
     
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=args.port)
