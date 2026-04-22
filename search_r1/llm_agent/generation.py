@@ -9,6 +9,7 @@ from verl import DataProto
 from verl.utils.tracking import Tracking
 import shutil
 import requests
+import time
 
 @dataclass
 class GenerationConfig:
@@ -448,14 +449,28 @@ If I want to give the final answer, I should put the answer between <answer> and
         return [self._passages2string(result) for result in results]
 
     def _batch_search(self, queries):
-        
         payload = {
             "queries": queries,
             "topk": self.config.topk,
             "return_scores": True
         }
-        
-        return requests.post(self.config.search_url, json=payload).json()
+
+        # Keep retrying forever with exponential backoff.
+        backoff_seconds = 1.0
+        max_backoff_seconds = 10.0
+
+        while True:
+            try:
+                response = requests.post(self.config.search_url, json=payload, timeout=30)
+                response.raise_for_status()
+                return response.json()
+            except Exception as exc:
+                print(
+                    f"[Retriever] request failed: {exc}. "
+                    f"Retrying in {backoff_seconds:.1f}s..."
+                )
+                time.sleep(backoff_seconds)
+                backoff_seconds = min(backoff_seconds * 2, max_backoff_seconds)
 
     def _passages2string(self, retrieval_result):
         format_reference = ''

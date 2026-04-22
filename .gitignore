@@ -11,3 +11,4 @@ __pycache__/
 *.pywzzz
 verl.egg-info/
 venv*/
+output*/

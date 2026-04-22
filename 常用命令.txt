@@ -1,0 +1,43 @@
+# 1) 使用 HF 镜像
+export HF_ENDPOINT=https://hf-mirror.com
+
+# 2) 安装/升级 huggingface_hub（如果没装）
+pip install -U "huggingface-hub<1.0,>=0.24.0"
+
+# 3) 下载模型到指定目录（支持断点续传）
+hf download Qwen/Qwen2.5-3B-Instruct \
+  --local-dir /root/autodl-tmp/models/Qwen/Qwen2.5-3B-Instruct \
+  --resume-download
+
+save_path=/home/machao123/data
+
+# 下载 BM25 index
+huggingface-cli download PeterJinGo/wiki-18-bm25-index --repo-type dataset --local-dir "$save_path"
+
+# 下载 wiki-18
+huggingface-cli download PeterJinGo/wiki-18-corpus --repo-type dataset --include "wiki-18.jsonl.gz" --local-dir "$save_path"
+
+# 解压
+gzip -d "$save_path/wiki-18.jsonl.gz"
+
+faiss安装
+pip install faiss-gpu-cu11 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip3 install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://mirrors.nju.edu.cn/pytorch/whl/cu121
+
+MAX_JOBS=8 pip install flash-attn --no-build-isolation
+
+===============================
+conda create -n retriever python=3.10
+conda activate retriever
+
+# we recommend installing torch with conda for faiss-gpu
+conda install pytorch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 pytorch-cuda=12.1 -c pytorch -c nvidia
+pip install transformers datasets pyserini==1.2.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+## install the gpu version faiss to guarantee efficient RL rollout
+conda install -c pytorch -c nvidia faiss-gpu=1.8.0
+
+## API function
+pip install uvicorn fastapi
+====================================
