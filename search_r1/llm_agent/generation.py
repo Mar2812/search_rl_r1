@@ -10,6 +10,7 @@ from verl.utils.tracking import Tracking
 import shutil
 import requests
 import time
+import json
 
 @dataclass
 class GenerationConfig:
@@ -473,12 +474,75 @@ If I want to give the final answer, I should put the answer between <answer> and
                 backoff_seconds = min(backoff_seconds * 2, max_backoff_seconds)
 
     def _passages2string(self, retrieval_result):
-        format_reference = ''
+        """
+        Normalize retriever output into a single string.
+
+        Expected shape (common):
+        - retrieval_result: List[{"document": {"contents": str}, ...}, ...]
+
+        In practice, some retrievers may return JSON strings, a single dict, or
+        slightly different key layouts. This function is defensive to prevent
+        hard crashes during training/validation.
+        """
+
+        def _maybe_json_loads(x):
+            if not isinstance(x, str):
+                return x
+            s = x.strip()
+            if not s:
+                return x
+            if (s.startswith("{") and s.endswith("}")) or (s.startswith("[") and s.endswith("]")):
+                try:
+                    return json.loads(s)
+                except Exception:
+                    return x
+            return x
+
+        retrieval_result = _maybe_json_loads(retrieval_result)
+
+        # Some services may wrap passages as {"result": [...]}
+        if isinstance(retrieval_result, dict):
+            if "result" in retrieval_result:
+                retrieval_result = retrieval_result["result"]
+            elif "results" in retrieval_result:
+                retrieval_result = retrieval_result["results"]
+            else:
+                retrieval_result = [retrieval_result]
+
+        # If it's still a string, just return it as-is (best-effort).
+        if isinstance(retrieval_result, str):
+            return retrieval_result
+
+        format_reference = ""
         for idx, doc_item in enumerate(retrieval_result):
-            
-            content = doc_item['document']['contents']
-            title = content.split("\n")[0]
-            text = "\n".join(content.split("\n")[1:])
+            doc_item = _maybe_json_loads(doc_item)
+
+            # If doc_item is still a string, keep it.
+            if isinstance(doc_item, str):
+                if doc_item.strip():
+                    format_reference += f"Doc {idx+1} {doc_item.strip()}\n"
+                continue
+
+            # Try common layouts for content.
+            content = None
+            if isinstance(doc_item, dict):
+                if isinstance(doc_item.get("document"), dict) and "contents" in doc_item["document"]:
+                    content = doc_item["document"]["contents"]
+                elif "contents" in doc_item:
+                    content = doc_item["contents"]
+                elif "content" in doc_item:
+                    content = doc_item["content"]
+                elif "text" in doc_item:
+                    content = doc_item["text"]
+
+            if not isinstance(content, str):
+                # Last resort: stringify the object to avoid crashing.
+                format_reference += f"Doc {idx+1} {str(doc_item)}\n"
+                continue
+
+            lines = content.split("\n")
+            title = lines[0] if lines else ""
+            text = "\n".join(lines[1:]) if len(lines) > 1 else ""
             format_reference += f"Doc {idx+1}(Title: {title}) {text}\n"
 
         return format_reference
